@@ -1,7 +1,7 @@
 import express from 'express';
 import { check } from 'express-validator';
-import  {login, googleSingIn } from '../controllers/auth.js';
-import { validarCampos } from '../middlewares/validar_campos.js';
+import  {login, googleSingIn, renovarToken } from '../controllers/auth.js';
+import { validarCampos, validarJWT } from '../middlewares/index.js';
 
 const router = express.Router();
 
@@ -16,5 +16,7 @@ router.post('/google',[
 
     //TODO: validar que venga el "Rol" o Rol po defecto "USER_ROLE"    
 ], googleSingIn );
+
+router.get('/', validarJWT, renovarToken );
 
 export default router;
