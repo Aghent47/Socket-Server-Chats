@@ -52,6 +52,7 @@ function handleCredentialResponse(response) {
             
             localStorage.setItem('token', token);
             console.log('Token Guardado en el LocalStorage:', token);
+            window.location = 'chat.html';
         })
         .catch(err => {
             console.log(err);
