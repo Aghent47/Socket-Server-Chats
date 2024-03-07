@@ -7,8 +7,7 @@ import { googleVerify } from "../helpers/google-verify.js";
 export const login = async (req, res = response) => {
 
     const { mail, password } = req.body;
-
-
+    
     try {
 
         // verificar si el mail existe
@@ -52,7 +51,6 @@ export const login = async (req, res = response) => {
             msg: 'Hable con el administrador'
         });
     }
-
 }
 
 export const googleSingIn = async (req, res = response) => {
@@ -60,12 +58,10 @@ export const googleSingIn = async (req, res = response) => {
     const { id_token } = req.body; // obteniendo el id_token en el backend
 
     try {
-      
-
-        const {name, img, mail} = await googleVerify(id_token);
+        const { name, img, mail } = await googleVerify(id_token);
 
         let usuario = await User.findOne({ mail });
-        
+
         if (!usuario) {
             // tengo que crearlo
             const data = {
@@ -92,12 +88,12 @@ export const googleSingIn = async (req, res = response) => {
         // Generar el JWT
         const token = await generarJWT(usuario.id);
 
-        
+
         res.json({
             usuario,
             token
         });
-        
+
     } catch (error) {
         res.status(400).json({
             msg: 'Token de google no es valido'
@@ -107,15 +103,15 @@ export const googleSingIn = async (req, res = response) => {
 
 }
 
-export const renovarToken = async ( req, res = response ) => {
-    
-        const { usuario } = req;
-    
-        // Generar un nuevo JWT y retornarlo en la peticion
-        const token = await generarJWT( usuario.id );
-    
-        res.json({
-            usuario,
-            token
-        });
+export const renovarToken = async (req, res = response) => {
+
+    const { usuario } = req;
+
+    // Generar un nuevo JWT y retornarlo en la peticion
+    const token = await generarJWT(usuario.id);
+
+    res.json({
+        usuario,
+        token
+    });
 }
