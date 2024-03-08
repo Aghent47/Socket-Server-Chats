@@ -59,7 +59,7 @@ const conectarSocket = async () => {
     socket.on('usuarios-activos', dibujarUsuarios);
 
     socket.on('mensaje-privado', () => {
-
+        
     });
 
 }
