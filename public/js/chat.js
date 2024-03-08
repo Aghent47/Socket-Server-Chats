@@ -1,13 +1,13 @@
 const url = (window.location.origin.includes('localhost'))
-            ? 'http://localhost:8080/api/auth/'
-            : 'https://rest-server-actualizado-production.up.railway.app/api/auth/';
+    ? 'http://localhost:8080/api/auth/'
+    : 'https://rest-server-actualizado-production.up.railway.app/api/auth/';
 
 let usuario = null;
 let socket = null;
 
 // Referencias del HTML
 const txtUid = document.querySelector('#txtUid');
-const txtMensaje = document.querySelector('#txtMensaje'); 
+const txtMensaje = document.querySelector('#txtMensaje');
 const ulUsuarios = document.querySelector('#ulUsuarios');
 const ulMensajes = document.querySelector('#ulMensajes');
 const btnSalir = document.querySelector('#btnSalir');
@@ -15,15 +15,15 @@ const btnSalir = document.querySelector('#btnSalir');
 
 
 // validar el token del localStorage
-const validarJWT = async() => {
+const validarJWT = async () => {
     const token = localStorage.getItem('token') || '';
 
-    if(token.length <= 10) {
+    if (token.length <= 10) {
         window.location = 'index.html';
         throw new Error('No hay token en el servidor');
     }
 
-    const resp = await fetch(url,{
+    const resp = await fetch(url, {
         headers: {
             'x-token': token
         }
@@ -40,7 +40,7 @@ const validarJWT = async() => {
 }
 
 // funcion para establecer mi backend server io
-const conectarSocket = async() => {
+const conectarSocket = async () => {
     socket = io({
         'extraHeaders': {
             'x-token': localStorage.getItem('token')
@@ -54,23 +54,20 @@ const conectarSocket = async() => {
         console.log('Sockets offline');
     });
 
-    socket.on('recibir-mensajes', (peyload) => {
-        console.log(peyload);
-    });
+    socket.on('recibir-mensajes', dibujarMensajes);
 
     socket.on('usuarios-activos', dibujarUsuarios);
-    
-    socket.on('mensaje-privado',() => {
-        
+
+    socket.on('mensaje-privado', () => {
+
     });
-    
+
 }
 
 const dibujarUsuarios = (usuarios = []) => {
     let userHtml = '';
 
-    usuarios.forEach( ({name, uid})  => {
-
+    usuarios.forEach(({ name, uid }) => {
         userHtml += ` <li>
             <p>
                 <h5 class="text-success">
@@ -80,35 +77,42 @@ const dibujarUsuarios = (usuarios = []) => {
                     </span>
                 </h5>
             </p>
-
-        </li>
-        `;
-        
+        </li> `;
     });
+
     ulUsuarios.innerHTML = userHtml;
-
-
 }
 
-txtMensaje.addEventListener('keyup', ({keyCode}) => {
+const dibujarMensajes = (mensajes = []) => {
+    let mensajesHtml = '';
+
+    mensajes.forEach(({ name, mensaje }) => {
+        mensajesHtml += ` <li>
+            <p>
+                <span class="text-primary"> ${name}: </span>
+                <span> ${mensaje} </span>
+            </p>
+        </li> `;
+    });
+
+    ulMensajes.innerHTML = mensajesHtml;
+}
+
+txtMensaje.addEventListener('keyup', ({ keyCode }) => {
     const mensaje = txtMensaje.value;
     const uid = txtUid.value;
-   
-    if(keyCode !== 13) { return; }
-    if(mensaje.length === 0) { return; }
 
-    socket.emit('enviar-mensaje', {mensaje, uid} );
+    if (keyCode !== 13) { return; }
+    if (mensaje.length === 0) { return; }
+
+    socket.emit('enviar-mensaje', { mensaje, uid });
     txtMensaje.value = '';
 });
 
-
-
-const main = async() => {
+const main = async () => {
 
     //validar el JWT
     await validarJWT();
-
-
 }
 
 main();
